@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
@@ -19,6 +19,13 @@ import AuthSmallLayout from './AuthSmallLayout';
 
 const BaseComponent = ({ children, showWelcomeBanner }) => {
   const authenticatedUser = showWelcomeBanner ? getAuthenticatedUser() : null;
+  const [optimizelyExperimentName, setOptimizelyExperimentName] = useState('');
+  useEffect(() => {
+    if (optimizelyExperimentName) {
+      // eslint-disable-next-line react/no-unused-state
+      setOptimizelyExperimentName(optimizelyExperimentName);
+    }
+  });
 
   return (
     <>
@@ -51,7 +58,7 @@ const BaseComponent = ({ children, showWelcomeBanner }) => {
           {authenticatedUser ? <AuthExtraLargeLayout username={authenticatedUser.username} /> : <LargeLayout />}
         </ExtraLarge>
         <ExtraExtraLarge>
-          {authenticatedUser ? <AuthExtraLargeLayout variant="xxl" username={authenticatedUser.username} /> : <LargeLayout />}
+          {authenticatedUser ? <AuthExtraLargeLayout variant="xxl" username={authenticatedUser.username} /> : <LargeLayout experimentName={optimizelyExperimentName} />}
         </ExtraExtraLarge>
 
         <div className={classNames('content', { 'align-items-center mt-0': authenticatedUser })}>

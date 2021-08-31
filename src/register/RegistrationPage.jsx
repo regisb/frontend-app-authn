@@ -77,7 +77,7 @@ class RegistrationPage extends React.Component {
       showOptionalField: false,
       startTime: Date.now(),
       totalRegistrationTime: 0,
-      optimizelyExperimentName: '', // eslint-disable-line react/no-unused-state
+      optimizelyExperimentName: 'variation1', // eslint-disable-line react/no-unused-state
       readOnly: true,
     };
   }
@@ -657,6 +657,12 @@ class RegistrationPage extends React.Component {
               thirdPartyAuthApiStatus,
               intl)}
           </Form>
+          {this.state.optimizelyExperimentName === 'variation1'
+             && (
+               <div id="certificate.msg" className="micro text-gray-500">
+                 {intl.formatMessage(messages['certificate.msg'])}
+               </div>
+             )}
         </div>
       </>
     );
