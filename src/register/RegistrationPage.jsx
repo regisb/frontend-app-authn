@@ -101,6 +101,12 @@ class RegistrationPage extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
+    if (this.props.usernameSuggestions.length > 0 && this.state.username === '') {
+      this.setState({
+        username: ' ',
+      });
+      return false;
+    }
     if (this.props.validationDecisions !== nextProps.validationDecisions) {
       const state = { errors: { ...this.state.errors, ...nextProps.validationDecisions } };
 
@@ -297,6 +303,15 @@ class RegistrationPage extends React.Component {
     }
   }
 
+  handleUsernameSuggestionClose = (e) => {
+    if (e.target.name === 'username') {
+      this.setState({
+        username: '',
+      });
+    }
+    this.props.clearUsernameSuggestions();
+  }
+
   isFormValid(validations) {
     const keyValidList = Object.entries(validations).map(([key]) => !validations[key]);
     return keyValidList.every((current) => current === true);
@@ -370,8 +385,13 @@ class RegistrationPage extends React.Component {
         } else {
           errors.name = '';
         }
+        this.props.fetchRealtimeValidations(payload);
         break;
       case 'username':
+        if (value === ' ' && this.props.usernameSuggestions.length > 0) {
+          errors.username = '';
+          break;
+        }
         if (!value || value.length <= 1 || value.length > 30) {
           errors.username = intl.formatMessage(messages['username.validation.message']);
         } else if (!value.match(/^[a-zA-Z0-9_-]*$/i)) {
@@ -554,18 +574,6 @@ class RegistrationPage extends React.Component {
               helpText={[intl.formatMessage(messages['help.text.name'])]}
               floatingLabel={intl.formatMessage(messages['registration.fullname.label'])}
             />
-            <UsernameField
-              name="username"
-              value={this.state.username}
-              handleBlur={this.handleOnBlur}
-              handleChange={this.handleOnChange}
-              handleFocus={this.handleOnFocus}
-              errorMessage={this.state.errors.username}
-              helpText={[intl.formatMessage(messages['help.text.username.1']), intl.formatMessage(messages['help.text.username.2'])]}
-              floatingLabel={intl.formatMessage(messages['registration.username.label'])}
-              handleSuggestionClick={this.handleSuggestionClick}
-              usernameSuggestions={this.props.usernameSuggestions}
-            />
             <FormGroup
               name="email"
               value={this.state.email}
@@ -579,6 +587,20 @@ class RegistrationPage extends React.Component {
             >
               {this.renderEmailFeedback()}
             </FormGroup>
+
+            <UsernameField
+              name="username"
+              value={this.state.username}
+              handleBlur={this.handleOnBlur}
+              handleChange={this.handleOnChange}
+              handleFocus={this.handleOnFocus}
+              errorMessage={this.state.errors.username}
+              helpText={[intl.formatMessage(messages['help.text.username.1']), intl.formatMessage(messages['help.text.username.2'])]}
+              floatingLabel={intl.formatMessage(messages['registration.username.label'])}
+              handleSuggestionClick={this.handleSuggestionClick}
+              usernameSuggestions={this.props.usernameSuggestions}
+              handleUsernameSuggestionClose={this.handleUsernameSuggestionClose}
+            />
 
             {!currentProvider && (
               <PasswordField
